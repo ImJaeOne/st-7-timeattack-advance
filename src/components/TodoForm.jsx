@@ -1,24 +1,27 @@
 import { useState } from "react";
-import { todoApi } from "../api/todos";
+import { useTodoMutation } from "../hooks/useTodoMutation";
 
 export default function TodoForm({ fetchData }) {
   const [title, setTitle] = useState("");
   const [contents, setContents] = useState("");
 
+  const { useAddTodo } = useTodoMutation();
+  const { mutate: addMutation } = useAddTodo();
+
   // TODO: 필수: useMutation 으로 리팩터링 하세요.
   // TODO: 선택: useMutation 으로 리팩터링 후, useTodoMutation 커스텀훅으로 정리해 보세요.
-  const handleAddTodo = async (e) => {
+  const handleAddTodo = (e) => {
     e.preventDefault();
-    setTitle("");
-    setContents("");
-    await todoApi.post("/todos", {
+    const newTodo = {
       id: Date.now().toString(),
       title,
       contents,
       isCompleted: false,
       createdAt: Date.now(),
-    });
-    await fetchData();
+    };
+    addMutation(newTodo);
+    setTitle("");
+    setContents("");
   };
 
   return (
